@@ -1,0 +1,91 @@
+---
+title: "Assignment3ExtraCredit"
+author: "Matt Lewitzky"
+date: "2022-09-21"
+output: html_document
+---
+
+16.  Find your own dataset, import it and implement the following functions on the data
+
+- head
+- str
+- names
+- mean, min, max
+- table
+- is.na
+- colSums
+- class
+- cor
+- by
+- ifelse
+- case_when
+
+```{r}
+setwd("C:/Users/student/OneDrive - Bryant University/Desktop/Math 421")
+df <- read.csv('adult_census.csv')
+head(df)
+```
+```{r}
+str(df)
+```
+```{r}
+names(df)
+```
+```{r}
+mean(df$hours.per.week, na.rm=TRUE)
+max(df$hours.per.week, na.rm=TRUE)
+min(df$hours.per.week, na.rm=TRUE)
+```
+```{r}
+table(df$sex)
+```
+```{r}
+sum(is.na(df))
+```
+```{r}
+colSums(is.na(df))
+```
+```{r}
+class(df$sex)
+```
+```{r}
+cor(df$hours.per.week, df$age)
+```
+```{r}
+by(df$age, df$hours.per.week, FUN = mean)
+```
+```{r}
+df$sex2 <- ifelse(df$sex=='Female', 
+                        0,1)
+df
+```
+```{r}
+library(dplyr)
+df$age2 <-case_when(df$age<25 ~ 'Young Person',
+                    df$age<60 ~ 'Middle Aged',
+                    TRUE ~ 'Older')
+head(df)
+```
+17.  In the dataset in #16, practice the follows.  You can reuse the code of 16. 
+
+- Create a categorical variable from a continuous variable
+- From one categorical variable, create a new categorical variable with fewer categories
+```{r}
+df$age2 <- case_when(df$age<12 ~ 'child',
+                             df$age<20 ~ 'teenager', 
+                            df$age<40 ~ 'middle ager',
+                              df$age<70 ~ 'old',
+                             TRUE~'elderly')
+table(df$age2)
+```
+
+```{r}
+df$age3 <- case_when(df$age2 %in% c('child','teenager') ~ 'younger',
+                       df$age2 %in% c('middle ager','old','elderly') ~ 'older',
+                       TRUE~'break')
+table(df$age3)
+
+```
+
+
+
