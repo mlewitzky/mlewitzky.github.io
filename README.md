@@ -6,3 +6,6 @@
 [Click here to my Assignment 3](Assignment3.html)
 
 [Click here to my Assignment 3 Extra Credit](Assignment3ExtraCredit.html)
+
+[Click here to my Assignment 4](Assignment4.html)
+
