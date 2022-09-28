@@ -39,13 +39,13 @@ Problems
 df = data.frame(Rank = c(0:3),
                 Age = c(28,34,29,42),
                 Name = c('Tom','Jack','Steve','Ricky'))
-df
+head(df)
 ```
 
 2. Use `read.csv` to import the Covid19 Vaccination data from WHO: [link](https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv).
 ```{r}
 df <-  read.csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv')
-df
+head(df)
 ```
 
 
@@ -104,7 +104,7 @@ length(state_count)
 9. Create a new variable `weekdays` to store the weekday for each rows. 
 ```{r}
 df$weekdays <- weekdays(df$DATE)
-df
+head(df)
 ```
 
 10. Create the categorical variable `death2` variable taking the values as follows
@@ -181,7 +181,7 @@ by(df2$CASES, df2$MONTH, median)
 ```{r}
 setwd("C:/Users/student/OneDrive - Bryant University/Desktop/Math 421")
 df <- read.csv('titanic.csv')
-df
+head(df)
 ```
 ```{r}
 head(df)
@@ -201,7 +201,7 @@ min(df$Age, na.rm=TRUE)
 table(df$SibSp)
 ```
 ```{r}
-is.na(df)
+sum(is.na(df))
 ```
 ```{r}
 colSums(is.na(df))
@@ -218,12 +218,12 @@ by(df$Fare, df$Survived, FUN = mean)
 ```{r}
 df$Survived2 <- ifelse(df$Survived==0, 
                         'Did Not Survive','Did Survive')
-df
+head(df)
 ```
 ```{r}
 df$Survived2 <- case_when(df$Survived==0 ~ 'Did Not Survive', 
                             TRUE ~ 'Did Survive')
-df
+head(df) 
 ```
 
 17.  In the dataset in #16, practice the follows.  You can reuse the code of 16. 
