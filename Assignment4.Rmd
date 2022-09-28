@@ -43,7 +43,7 @@ Use `read_csv` function to import the US Covid 19 data at [link](https://covidtr
 ```{r}
 library(tidyverse)
 df <- read_csv('https://covidtracking.com/data/download/all-states-history.csv')
-df
+head(df)
 ```
 
 -------
@@ -63,7 +63,7 @@ df$weekday = wday(df$date)
 
 # day of the month
 df$monthday <- mday(df$date)
-df
+head(df)
 ```
 
 -------
@@ -77,7 +77,7 @@ df$daily_death <- case_when(
   df$deathIncrease <3 ~ 'low',
   df$deathIncrease <=14 ~ 'medium',
   TRUE ~ 'high')
-df
+head(df)
 ```
 
 - Create variable `month2` that takes three values: early_month (day of the month from 1-10), mid_month (day of the month from 11-20), and end_month (day of the month > 20).
@@ -86,14 +86,14 @@ df$month2 <- case_when(
   df$monthday <10 ~ 'early_month',
   df$monthday <=20 ~ 'mid_month',
   TRUE ~ 'end_month')
-df
+head(df)
 ```
 
 - Create variable `weekend` that takes two values:  1 if it's Saturday or Sunday or 0 otherwise. 
 ```{r}
 df$weekend <- case_when(df$weekday %in% c(1,7) ~ '1',
                TRUE ~ '0')
-df
+head(df)
 ```
 
 -------
@@ -262,54 +262,54 @@ df%>%
 ```{r}
 setwd("C:/Users/student/OneDrive - Bryant University/Desktop/Math 421")
 df2 <- read.csv('titanic.csv')
-df2
+head(df2)
 ```
 ```{r}
-df2 %>% select(PassengerId, Survived)
+df2 %>% select(PassengerId, Survived) %>% head(6)
 ```
 ```{r}
-df2 %>% filter(Survived==1)
+df2 %>% filter(Survived==1) %>% head(6)
 ```
 ```{r}
-df2 %>% mutate(DoubleFare = Fare * 2)
+df2 %>% mutate(DoubleFare = Fare * 2) %>% head(6)
 ```
 ```{r}
-df2 %>% summarise(mean_fare = mean(Fare, na.rm=TRUE))
+df2 %>% summarise(mean_fare = mean(Fare, na.rm=TRUE)) %>% head(6)
 ```
 ```{r}
-df2 %>% arrange(-SibSp)
+df2 %>% arrange(-SibSp) %>% head(6)
 ```
 ```{r}
-df2 %>% count(SibSp)
+df2 %>% count(SibSp) %>% head(6)
 ```
 
 ```{r}
 df2 %>% 
   count(SibSp) %>% 
-  arrange(-SibSp)
+  arrange(-SibSp) %>% head(6)
 ```
 ```{r}
 df2 %>% 
   filter(Survived==1) %>% 
   count(SibSp) %>% 
-  arrange(-SibSp)
+  arrange(-SibSp) %>% head(6)
 ```
 ```{r}
 df2 %>% 
   group_by(Sex) %>% 
-  summarise(mean_age = mean(Age, na.rm=TRUE))
+  summarise(mean_age = mean(Age, na.rm=TRUE)) %>% head(6)
 ```
 ```{r}
 df2 %>% 
   filter(Survived==1) %>%
   group_by(Sex) %>% 
-  summarise(mean_age = mean(Age, na.rm=TRUE))
+  summarise(mean_age = mean(Age, na.rm=TRUE)) %>% head (6)
 ```
 ```{r}
 df2 %>% 
   filter(Survived==1) %>%
   group_by(SibSp) %>% 
   summarise(mean_age = mean(Age, na.rm=TRUE)) %>%
-  arrange(-mean_age)
+  arrange(-mean_age) %>% head(6)
 ```
 
