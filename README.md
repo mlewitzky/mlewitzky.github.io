@@ -14,3 +14,5 @@
 [Click here to my Assignment 5 Extra Credit](Assignment5ExtraCredit.html)
 
 [Click here to my Assignment 6](Assignment6.html)
+
+[Link to the plot](Rainbow.png)
