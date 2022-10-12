@@ -16,3 +16,6 @@
 [Click here to my Assignment 6](Assignment6.html)
 
 [Link to the plot](Rainbow.png)
+
+[Click here to my Assignment 7](Assignment7.html)
+
