@@ -21,3 +21,4 @@
 
 [Assignment 7 Extra Credit](Assignment7ExtraCredit.html)
 
+[Assignment 8](Assignment-8.html)
