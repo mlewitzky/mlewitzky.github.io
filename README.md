@@ -31,4 +31,4 @@
 
 [Assignment 12](Assignment12.html)
 
-[Midterm Presentation](midterm_presentation.html)
+[Midterm Presentation](Midterm_presentation.html)
