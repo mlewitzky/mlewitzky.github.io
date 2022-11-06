@@ -1,0 +1,721 @@
+---
+output:
+  html_document:
+    theme: united
+title: "Math 421 - Midterm"
+author: "Matt Lewitzky"
+---
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# {.tabset}
+
+## I. Data Wranggling
+
+1. Download the data file `hdd0318cy.sas7bdat`.  
+
+2. Use `read_sas` in library `haven` to read the data. 
+```{r}
+library(haven)
+
+setwd("C:/Users/student/OneDrive - Bryant University/Desktop/Math 421")
+df <- read_sas('hdd0318cy.sas7bdat')
+
+```
+
+```{r}
+head(df)
+```
+   
+
+3. Filter the data to have only patients of the year 2018 (`yod=18`)
+```{r}
+table(df$yod)
+```
+
+```{r}
+library(tidyverse)
+library(dplyr)
+
+df <- df %>% filter(yod==18)
+```
+
+
+4. Select to work with only following variables: 
+
+```{r, eval=FALSE}
+df <- df %>% select("yod", "payfix","pay_ub92","age",  
+                      "sex","raceethn","provider","moa", 
+                      "yoa","mod","admtype", "asource" , 
+                      "preopday" ,"los", "service" , "icu","ccu",    
+                      "dispub92", "payer"  ,"drg","trandb", 
+                      "randbg","randbs","orr", "anes","seq",   
+                      "lab","dtest", "ther","blood","phar", 
+                      "other","patcon","bwght","total","tot" ,  
+                      "ecodub92","b_wt","pt_state","diag_adm","ancilar" ,
+                      "campus","er_fee","er_chrg","er_mode","obs_chrg",
+                      "obs_hour","psycchrg","nicu_day")
+
+```
+ 
+
+*Notice*:  You may want to save the current data to your computer for easy access later.  To save the data file use `write_csv(df, 'midterm.csv')`, for example.  
+```{r}
+write_csv(df, 'midterm.csv')
+```
+
+```{r}
+library(tidyverse)
+library(dplyr)
+
+setwd("C:/Users/student/OneDrive - Bryant University/Desktop/Math 421")
+
+df <- read_csv('midterm.csv')
+
+head(df)
+
+```
+
+5. What are variables that have missing values?
+```{r}
+colSums(is.na(df))
+```
+6. Remove all variables with missing values. 
+```{r}
+df1 <- df %>% select(-"payfix", -"raceethn", -"admtype", -"asource", -"preopday", -"bwght", -"ecodub92", -"pt_state", -"diag_adm", -"er_mode", -"obs_hour", -"nicu_day")
+```
+
+```{r}
+head(df1)
+```
+```{r}
+df1 <- df1 %>%
+  mutate(sex = as.factor(sex),
+         yoa = as.factor(yoa),
+         moa = as.factor(moa),
+         provider = as.factor(provider))
+```
+
+7. Refer to the data description in the file `HDD2015-18cy6-20-19.docx`, which variable recording the month of admission?, which variable recording the month of discharge?
+
+Month of admission - moa
+Month of discharge - mod
+
+8. Which month admitted the most number of patients? Which month admitted the most number of male patients?
+```{r}
+df1 %>% count(moa) %>%  arrange(-n)
+```
+```{r}
+df1 %>% filter(sex==1) %>% 
+  group_by(moa) %>% 
+  count(moa) %>% arrange(-n)
+
+```
+
+9. Which month has the most number of teenage female patients?
+```{r}
+df1 %>% filter(sex==2, age>12, age<20) %>% count(moa) %>%  arrange(-n)
+```
+
+10. Which provider has the most number of female patients in October? 
+```{r}
+df1 %>% filter(sex==2, moa==10) %>% 
+  count(provider) %>%  arrange(-n)
+
+```
+
+11. Are female patients older than male patients, on average? 
+```{r}
+df1 %>% group_by(sex) %>% 
+  summarize(avg_age = mean(age)) %>% 
+  arrange(-avg_age)
+
+```
+
+12. Calculate the average age of patients by months. Which month has the oldest patients on average age?
+```{r}
+df1 %>% group_by(moa) %>% 
+  summarize(avg_age = mean(age)) %>% 
+  arrange(-avg_age)
+
+```
+
+13. What is the name of the provider that has the highest total charge?
+```{r}
+df1 %>% group_by(provider) %>% 
+  summarize(max_total_charge = max(tot)) %>% 
+  arrange(-max_total_charge)
+
+```
+
+14. What is the name of the provider that has the least total charge for teenage male on average?
+```{r}
+df1 %>% filter(sex==1, age>12, age<20) %>% 
+  group_by(provider) %>% 
+  summarize(avg_total_charge = mean(tot)) %>% 
+  arrange(avg_total_charge)
+
+```
+
+15. Create a season (Spring, Summer, Fall, Winter) variable. Calculate the length of stays by season.  Which season has the longest length of stays on average?
+```{r}
+df1$season <- case_when(df1$moa %in% c(12,1,2) ~ 'Winter',
+                        df1$moa %in% c(3,4,5) ~ 'Spring',
+                        df1$moa %in% c(6,7,8) ~ 'Summer',
+                        TRUE ~ 'Fall')
+
+```
+
+```{r}
+df1 %>% group_by(season) %>% 
+  summarize(avg_LOS = mean(los)) %>% 
+  arrange(avg_LOS)
+
+```
+
+16. On average, how much a 20 year-old male get charged for staying 1 day in the Fall season?
+```{r}
+df1 %>% filter(sex==1, age==20, season=='Fall', los==1) %>%
+  summarize(avg_charge = mean(tot))
+
+```
+
+17. Write a paragraph to summarize the section and give your comments on the results. You could do some other calculations to support your points. 
+
+It was very intriguing to study and analyze all this data. While examining a monthly breakdown of the data, the most patients seemed to be admitted in October, with the average age of both males and females admitted falling around 50 years old. Males were just slightly older than females on average. I found that the average length of stay per season was just under 5 days. When looking at the total breakdown charges, I found that Provider 7214 has the highest total charge, at 3,402,056 dollars, with the least charge for a teenage male falling around 10,000 dollars.  These were just a few of the most significant findings in the data.
+
+
+-------
+
+## II. Data Visualization
+
+Continue with the data from part I. 
+
+1. Provides at least 10 meaningful plots. Comments on the plots. All plots should have title, caption, appropriate labels on x and y-axis
+```{r}
+plot1 <- df1 %>%
+  group_by(sex) %>% 
+  summarize(avg_age = mean(age)) %>%
+  ggplot()+ 
+  geom_col(mapping=aes(x=sex, y=avg_age))+
+  labs(x='Sex', 
+       y = 'Average Age',
+       title = 'Average Age by Sex', 
+       caption = 'This graph represents the average age by sex.')
+plot1
+```
+```{r}
+ggsave(filename = 'Plot1.png', plot = plot1)
+```
+
+```{r}
+plot2 <- df1 %>%
+  group_by(moa, sex) %>% 
+  summarize(avg_age = mean(age)) %>%
+  ggplot()+ 
+  geom_col(mapping=aes(x=moa, y=avg_age, fill=sex))+
+  labs(x='Month of Admission', 
+       y = 'Provider',
+       color = 'Sex',
+       title = 'Average Age by the Sex and the Month of Admission', 
+       caption = 'This graph represents the average age by sex and provider.')
+
+plot2
+```
+
+```{r}
+ggsave(filename = 'Plot2.png', plot = plot2)
+```
+
+```{r}
+plot3 <- df1 %>%
+  group_by(moa, sex) %>% 
+  summarize(avg_lengthofstay = mean(los)) %>%
+  ggplot()+ 
+  geom_col(mapping=aes(x=moa, y=avg_lengthofstay, fill=sex))+
+  labs(x='Month of Admission', 
+       y = 'Provider',
+       color = 'Sex',
+       title = 'Average Length of Stay by the Sex and the Month of Admission', 
+       caption = 'This graph represents the average length of stay by sex and provider.')
+
+plot3
+```
+
+```{r}
+ggsave(filename = 'Plot3.png', plot = plot3)
+```
+
+```{r}
+plot4 <- df1 %>%
+  group_by(mod, sex) %>% 
+  summarize(avg_lengthofstay = mean(los)) %>%
+  ggplot()+ 
+  geom_col(mapping=aes(x=mod, y=avg_lengthofstay, fill=sex))+
+  labs(x='Month of Discharge', 
+       y = 'Provider',
+       color = 'Sex',
+       title = 'Average Length of Stay by the Sex and the Month of Discharge', 
+       caption = 'This graph represents the average length of stay by sex and provider.')
+
+plot4
+```
+
+```{r}
+ggsave(filename = 'Plot4.png', plot = plot4)
+```
+
+```{r}
+plot5 <- df1 %>% 
+  filter(provider %in% c('7201', '7204', '7214')) %>%
+  group_by(provider) %>%
+  summarize(avg_age = mean(age)) %>% 
+  ggplot()+ 
+  geom_point(mapping=aes(x=provider, y=avg_age))+
+  labs(x='Provider', 
+       y = 'Average Age', 
+       title = 'Average Age by Providers: Newport, Miriam, and Women and Infants', 
+       caption = 'Miriam providers tend to be the oldest!')
+
+plot5
+```
+
+```{r}
+ggsave(filename = 'Plot5.png', plot = plot5)
+```
+
+```{r}
+plot6 <- df1 %>% 
+  filter(moa %in% c('1', '6', '10')) %>%
+  group_by(moa) %>%
+  summarize(avg_lengthofstay = mean(los)) %>% 
+  ggplot()+ 
+  geom_point(mapping=aes(x=moa, y=avg_lengthofstay))+
+  labs(x='Month of Admission', 
+       y = 'Average Length of Stay', 
+       title = 'Average Length of Stay by Month of Admission: January, June, and October', 
+       caption = 'The length of stay tends to be longer during the month of October!')
+
+plot6
+```
+
+```{r}
+ggsave(filename = 'Plot6.png', plot = plot6)
+```
+
+```{r}
+plot7 <- df1 %>% 
+  filter(yoa %in% c('17', '18')) %>%
+  group_by(yoa) %>%
+  summarize(avg_lengthofstay = mean(los)) %>% 
+  ggplot()+ 
+  geom_point(mapping=aes(x=yoa, y=avg_lengthofstay))+
+  labs(x='Year of Admission', 
+       y = 'Average Length of Stay', 
+       title = 'Average Length of Stay by Year of Admission: 2017 vs. 2018', 
+       caption = 'The length of stay tends to be longer in 2017 than 2018!')
+
+plot7
+```
+
+```{r}
+ggsave(filename = 'Plot7.png', plot = plot7)
+```
+
+```{r}
+plot8 <- df1 %>%
+  group_by(moa, yoa) %>% 
+  summarize(avg_age = mean(age)) %>%
+  ggplot()+ 
+  geom_col(mapping=aes(x=moa, y=avg_age, fill=yoa))+
+  labs(x='Month of Admission', 
+       y = 'Average Age',
+       color = 'Year of Admission',
+       title = 'Average Age by the Month and Year of Admission', 
+       caption = 'This graph represents the average salary by month and year of admission.')
+
+plot8
+```
+
+```{r}
+ggsave(filename = 'Plot8.png', plot = plot8)
+```
+
+```{r}
+plot9 <- df1 %>% ggplot()+ 
+  geom_bar(mapping=aes(x=payer))+
+  facet_wrap(~sex)+
+  labs(x='Payer', 
+       y = 'Count',
+       title = 'Type of Payer by Sex', 
+       caption = 'This graph represents the type of payer by sex.')
+
+plot9
+```
+
+```{r}
+ggsave(filename = 'Plot9.png', plot = plot9)
+```
+
+```{r}
+plot10 <- df1 %>% ggplot()+ 
+  geom_bar(mapping=aes(x=moa, fill=sex),
+           position = 'dodge')+
+  labs(x='Month of Admission', 
+       y = 'Count',
+       color = 'Sex',
+       title = 'Count of Month of Admission by Sex', 
+       caption = 'This graph represents the month of admission count by sex.')
+
+plot10
+```
+
+```{r}
+ggsave(filename = 'Plot10.png', plot = plot10)
+```
+
+2. Make an animation plot. 
+```{r}
+library(gganimate)
+library(ggplot2)
+library(tidyverse)
+library(knitr)
+```
+
+```{r}
+plot11 <- df1 %>% ggplot(aes(x = moa,
+           y = age, color=yoa))+
+  geom_point()+
+  transition_states(sex)+
+  labs(title = 'sex: {closest_state}',
+       x='Month of Admission', 
+       y = 'Average Age',
+       color = 'Year of Admission',
+       caption = 'This graph represents the average salary by month and year of admission.')
+
+plot11
+```
+
+```{r}
+ggsave(filename = 'Plot11.png', plot = plot11)
+```
+
+3. Write a paragraph to summarize the section and give your comments on the results. 
+
+When analyzing the patients admitted per month, I found that January, May, August, and October have a higher number of admitted patients than any other months. Although every month are relatively close in admissions, there were more females admitted than males. I also found that there was no major difference in the length of stay between males and females. Typically, the total charge increased pending the more days that a patient was in the hospital. Generally, age did not impact the total charge, but age had a big impact on total number of admissions. When viewing the distribution of patients admitted by age, it became clear that older patients are admitted more frequently than younger patients. This did not surprise me as it's typical to have more medical issues at an older age.
+
+
+-------
+
+## III. Predictive Models
+
+Continue with the data from part I. Make sure you do not have any missing values in the data. Use the follows as the target and input variables: 
+```{r}
+colSums(is.na(df1))
+```
+
+```{r}
+head(df1)
+```
+
+*Target Variable*: Create the target variable taking value of 
+
+  - `low` if the total charge of a patient (`tot`) is smaller than the median of the total charge, and
+
+  - `high` otherwise. 
+```{r}
+df1$target <- case_when(df1$tot < median(df1$tot) ~ 'low',
+
+TRUE ~ 'high')
+```
+
+*Input Variables*:
+
+  - "age","sex","raceethn","provider","moa","mod","admtype","campus", 'los'
+```{r}
+df2 <- df1 %>% select('age','sex','provider','moa','mod',
+
+'campus', 'los', 'target')
+```
+
+```{r}
+head(df2)
+```
+  
+-------
+
+1. Use `filter` function to filter out rows where `raceethn==''` or `admtype==''`. Make sure all the categorical variables are factor, numeric variables are numeric. Set Training : Testing Split = 10 : 90 
+```{r}
+library(caret)
+
+splitIndex <- createDataPartition(df2$target, p = .10,
+                                  list = FALSE)
+
+df_train <- df2[ splitIndex,]
+
+df_test <- df2[-splitIndex,]
+```
+
+2. Train a decision tree using `rpart`.  Plot the decision tree. Plot the variable importance ranked by the tree. 
+```{r}
+library(rpart)
+
+tree_model <- rpart(target ~ ., data = df_train,
+
+control = rpart.control(maxdepth = 5))
+```
+
+```{r}
+library(rattle)
+
+fancyRpartPlot(tree_model)
+```
+
+```{r}
+tree_model$variable.importance
+```
+
+```{r}
+barplot(tree_model$variable.importance)
+```
+
+3. Using caret for this question. Set `Training Control` to be: Use Cross-Validation of 5 folds across all models.  Train & tune at least 2 different models (i.e. two different values for `method=` in the train function of caret).  Plot the hyper-parameter tuning plots for each model. 
+```{r}
+trControl = trainControl(method = "cv",
+
+number = 5)
+
+tuneGrid = expand.grid(mtry = 2:4,
+
+splitrule = c('gini', 'extratrees'),
+
+min.node.size = c(1:10))
+
+forest_ranger <- train(target~., data=df_train,
+
+method = "ranger",
+
+trControl = trControl,
+
+tuneGrid = tuneGrid)
+```
+
+```{r}
+plot(forest_ranger)
+```
+
+```{r}
+df_test <- df_test %>%
+
+mutate(target = as.factor(target))
+```
+
+```{r}
+pred <- predict(forest_ranger, df_test)
+
+cm <- confusionMatrix(data = pred, reference = df_test$target)
+
+cm$overall[1]
+```
+
+```{r}
+trControl = trainControl(method = "cv",
+
+number = 5)
+
+tuneGrid = expand.grid(predFixed = 2:5,
+
+minNode = 10)
+
+forest_Rborist <- train(target~., data=df_train,
+
+method = "Rborist",
+
+trControl = trControl,
+
+tuneGrid = tuneGrid)
+```
+
+```{r}
+plot(forest_Rborist)
+```
+
+```{r}
+df_test <- df_test %>%
+
+mutate(target = as.factor(target))
+```
+
+```{r}
+pred <- predict(forest_Rborist, df_test)
+
+cm <- confusionMatrix(data = pred, reference = df_test$target)
+
+cm$overall[1]
+```
+
+4. Plot the comparison of the models in 3. 
+```{r}
+results <- resamples(list('Ranger Forest' = forest_ranger,
+
+'Rborist Forest' = forest_Rborist))
+
+bwplot(results)
+```
+
+5. What is your final selection for the model? Test the accuracy of your final model on the test data. 
+```{r}
+pred <- predict(forest_ranger, df_test)
+
+cm <- confusionMatrix(data = pred, reference = df_test$target)
+
+cm$overall[1]
+```
+
+6. Create another `target` variable (binary), decide the input variables and redo 1 to 5. 
+```{r}
+df1$target <- case_when(df1$los < median(df1$los) ~ 'low',
+
+TRUE ~ 'high')
+```
+
+```{r}
+df3 <- df1 %>% select('age','sex','provider','moa','mod',
+
+'campus', 'tot', 'yoa', 'yod','target')
+```
+
+```{r}
+library(caret)
+
+splitIndex <- createDataPartition(df2$target, p = .10,
+                                  list = FALSE)
+
+df_train <- df2[ splitIndex,]
+
+df_test <- df2[-splitIndex,]
+```
+
+```{r}
+library(rpart)
+
+tree_model <- rpart(target ~ ., data = df_train,
+
+control = rpart.control(maxdepth = 5))
+```
+
+```{r}
+library(rattle)
+
+fancyRpartPlot(tree_model)
+```
+
+```{r}
+tree_model$variable.importance
+```
+
+```{r}
+barplot(tree_model$variable.importance)
+```
+
+```{r}
+trControl = trainControl(method = "cv",
+
+number = 5)
+
+tuneGrid = expand.grid(mtry = 2:4,
+
+splitrule = c('gini', 'extratrees'),
+
+min.node.size = c(1:10))
+
+forest_ranger <- train(target~., data=df_train,
+
+method = "ranger",
+
+trControl = trControl,
+
+tuneGrid = tuneGrid)
+```
+
+```{r}
+plot(forest_ranger)
+```
+
+```{r}
+df_test <- df_test %>%
+
+mutate(target = as.factor(target))
+```
+
+```{r}
+pred <- predict(forest_ranger, df_test)
+
+cm <- confusionMatrix(data = pred, reference = df_test$target)
+
+cm$overall[1]
+```
+
+```{r}
+trControl = trainControl(method = "cv",
+
+number = 5)
+
+tuneGrid = expand.grid(predFixed = 2:5,
+
+minNode = 10)
+
+forest_Rborist <- train(target~., data=df_train,
+
+method = "Rborist",
+
+trControl = trControl,
+
+tuneGrid = tuneGrid)
+```
+
+```{r}
+plot(forest_Rborist)
+```
+
+```{r}
+df_test <- df_test %>%
+
+mutate(target = as.factor(target))
+```
+
+```{r}
+pred <- predict(forest_Rborist, df_test)
+
+cm <- confusionMatrix(data = pred, reference = df_test$target)
+
+cm$overall[1]
+```
+
+```{r}
+results <- resamples(list('Ranger Forest' = forest_ranger,
+
+'Rborist Forest' = forest_Rborist))
+
+bwplot(results)
+```
+
+```{r}
+pred <- predict(forest_ranger, df_test)
+
+cm <- confusionMatrix(data = pred, reference = df_test$target)
+
+cm$overall[1]
+```
+
+7. Write a paragraph to summarize the section and give your comments on the results. 
+
+After completing this study, I attempted to create two unique models designed to target each variable. I decided to initially target the total patient charge variable. Secondly, I targeted the length of stay of the patient. For both of the target variables, I used Ranger and Rborist random forests to properly represent these variables. In each case, the accuracy score of the models landed above 80%, so I felt confident that it was an effective predictive model.
+
+
+-------
+
