@@ -1,0 +1,128 @@
+
+---
+title: "Math421 Midterm"
+author: Matt Lewitzky
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+
+---
+# Plot 1
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+```{r xaringan-tile-view, echo=FALSE}
+xaringanExtra::use_tile_view()
+```
+
+
+```{r xaringan-panelset, echo=FALSE}
+xaringanExtra::use_panelset()
+```
+
+```{r, echo=FALSE}
+xaringanExtra::use_webcam()
+```
+
+```{r xaringan-fit-screen, echo=FALSE}
+xaringanExtra::use_fit_screen()
+```
+
+![](Plot1.png)
+
+
+---
+# Plot 2
+
+![](Plot2.png)
+
+---
+# Plot 3
+
+![](Plot3.png)
+
+---
+# Plot 4
+
+![](Plot4.png)
+
+---
+# Plot 5
+
+![](Plot5.png)
+
+---
+# Plot 6
+
+![](Plot6.png)
+
+---
+# Plot 7
+
+![](Plot7.png)
+
+---
+# Plot 8
+
+![](Plot8.png)
+
+---
+# Plot 9
+
+![](Plot9.png)
+
+---
+# Plot 10
+
+![](Plot10.png)
+
+---
+# Animated Plot
+
+![](plot11.gif)
+
+---
+class: inverse, middle, center
+
+# Model Comparisons - First target variable
+Total charge - high & low
+
+---
+# Comparison
+
+![](plot12.png)
+
+---
+class: inverse, middle, center
+
+# Model Comparisons - Second target variable
+Length of stay - high & low
+
+---
+# Comparison
+
+![](Plot13.png)
+
+---
+# Challenges
+
+-The whole project was challenging, but I fought through the adversity
+
+
+-There was SO much data
+
+
+-Struggled to make and read so many useful graphs
+
+
+-Also needed help with save the plot images
+
+
+-Had trouble creating the presentation since I had never done that before
+
